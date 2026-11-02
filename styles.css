@@ -26,3 +26,8 @@
 .estimate-form :is(input,select,textarea):focus,.contact-form :is(input,select,textarea):focus{outline:none;box-shadow:none;border-bottom-color:var(--green);border-bottom-width:2px}
 .contact-form :is(input,select,textarea):focus{border-bottom-color:var(--sand)}
 @media(max-width:760px){.section-label{margin-bottom:24px}.section-index .section-label{margin-bottom:28px}}
+
+.phone-copy{display:inline-block;border:0;background:none;padding:0;color:inherit;font:inherit;line-height:inherit;text-align:left;cursor:pointer;user-select:text}
+.phone-copy:hover{opacity:.8}
+.phone-copy-status{min-height:18px;margin-top:5px;font-family:var(--sans);font-size:10px;line-height:1.6;color:#d7dfce}
+.clipboard-fallback{position:fixed;left:-10000px;top:0;width:1px;height:1px}

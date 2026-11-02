@@ -168,7 +168,30 @@ function validEmail(raw) { return typeof raw === 'string' && /^[^\s@]+@[^\s@]+\.
 const companyPhone = phoneNumber(content.contacts.phone);
 const companyEmail = validEmail(content.contacts.email) ? content.contacts.email : null;
 if (companyPhone) {
-  const link = element('a', '', content.contacts.phone); link.href = `tel:${companyPhone}`; $('#phone-slot').replaceChildren(link);
+  const button = element('button', 'phone-copy', content.contacts.phone);
+  button.type = 'button';
+  button.setAttribute('aria-label', `Скопіювати номер телефону ${content.contacts.phone}`);
+  const status = element('div', 'phone-copy-status');
+  status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+  button.addEventListener('click', async () => {
+    let copied = false;
+    try { await navigator.clipboard.writeText(companyPhone); copied = true; }
+    catch {
+      // Резервний варіант для браузерів без доступу до Clipboard API.
+      const field = document.createElement('textarea');
+      field.value = companyPhone; field.className = 'clipboard-fallback';
+      field.setAttribute('aria-label', 'Номер для копіювання');
+      document.body.append(field); field.select(); field.setSelectionRange(0, field.value.length);
+      try { copied = document.execCommand('copy'); } catch { /* Ручне копіювання нижче. */ }
+      field.remove(); button.focus({ preventScroll: true });
+    }
+    status.textContent = copied ? 'Номер скопійовано' : 'Номер виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».';
+    if (!copied) {
+      const range = document.createRange(); range.selectNodeContents(button);
+      const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    }
+  });
+  $('#phone-slot').replaceChildren(button, status);
   $('#quick-call').href = `tel:${companyPhone}`; $('#quick-call').setAttribute('aria-label', 'Зателефонувати до FORMA'); text('#quick-call-label', 'Зателефонувати');
 }
 if (companyEmail) { const link = element('a', '', companyEmail); link.href = `mailto:${companyEmail}`; $('#email-slot').replaceChildren(link); }
