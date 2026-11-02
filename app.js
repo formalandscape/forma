@@ -1,4 +1,5 @@
 import { content } from './content.js';
+import { sendInquiry } from './inquiry.js';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -66,7 +67,7 @@ services.forEach((service, index) => {
   service.details.forEach(detail => list.append(element('li', '', detail)));
   const note = element('div', 'service-note', service.confirmed ? 'Склад робіт визначаємо індивідуально' : 'Можлива послуга · потребує підтвердження');
   const link = element('a', 'text-link', 'Обговорити напрям'); link.href = '#contact'; link.append(element('span', '', '↗'));
-  link.addEventListener('click', () => { $('#service').value = service.id; $('#form-result').hidden = true; });
+  link.addEventListener('click', () => { $('#service').value = service.id; clearSubmissionResult(); });
   card.append(top, element('h3', '', service.title), element('p', '', service.description), list, note, link);
   $('#service-grid').append(card);
 });
@@ -194,9 +195,9 @@ $('#estimate-form').addEventListener('submit', event => {
   $('#service').value = $('#estimate-service').value;
   $('#contact').scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
   $('#name').focus({ preventScroll: true });
-  $('#form-result').hidden = true;
+  clearSubmissionResult();
 });
-$('#clear-estimate').addEventListener('click', () => { estimate = null; $('#estimate-summary').hidden = true; $('#form-result').hidden = true; });
+$('#clear-estimate').addEventListener('click', () => { estimate = null; $('#estimate-summary').hidden = true; clearSubmissionResult(); });
 function validateField(field) {
   let message = '';
   if (field.id === 'name' && field.value.trim().length < 2) message = 'Вкажіть ім’я — щонайменше 2 символи.';
@@ -211,45 +212,78 @@ requiredFields.forEach(field => {
   field.addEventListener('blur', () => { if (field.value || field.hasAttribute('aria-invalid')) validateField(field); });
   field.addEventListener('input', () => { if (field.getAttribute('aria-invalid') === 'true') validateField(field); });
 });
-$('#contact-form').addEventListener('input', event => { if (event.target !== $('#message-draft')) $('#form-result').hidden = true; });
-$('#contact-form').addEventListener('change', () => { $('#form-result').hidden = true; });
-$('#contact-form').addEventListener('submit', event => {
+const inquiryForm = $('#contact-form');
+const submitButton = $('#inquiry-submit');
+let submitting = false;
+function clearSubmissionResult() {
+  if (submitting) return;
+  $('#form-result').hidden = true;
+  $('#submission-status').hidden = true;
+  submitButton.disabled = false;
+  text('#submit-label', 'Надіслати звернення');
+}
+inquiryForm.addEventListener('input', event => {
+  if (event.target !== $('#message-draft')) clearSubmissionResult();
+});
+inquiryForm.addEventListener('change', clearSubmissionResult);
+function showSubmissionStatus(state, message) {
+  const status = $('#submission-status');
+  status.hidden = false; status.dataset.state = state; status.textContent = message;
+}
+inquiryForm.addEventListener('submit', async event => {
   event.preventDefault();
+  if (submitting || submitButton.disabled) return;
   const invalid = requiredFields.filter(field => !validateField(field));
   if (invalid.length) { invalid[0].focus(); return; }
+  if ($('#website').value) {
+    showSubmissionStatus('error', 'Надсилання заблоковано перевіркою від спаму. Оновіть сторінку або напишіть нам на пошту.');
+    return;
+  }
   const lines = ['Вітаю, FORMA!', `Мене звати ${$('#name').value.trim()}.`, `Телефон: ${phoneNumber($('#phone').value)}`, `Розташування: ${$('#district').value.trim()}`, `Напрям: ${$('#service').selectedOptions[0].textContent}`];
   if (estimate) lines.push(`Площа ділянки: ${estimate.area ? `${estimate.area} м²` : 'уточнити'}`, `Стан ділянки: ${estimate.state || 'уточнити'}`, 'Прошу підготувати індивідуальний розрахунок.');
   if ($('#message').value.trim()) lines.push('', $('#message').value.trim());
-  $('#message-draft').value = lines.join('\n'); $('#form-result').hidden = false; text('#copy-status', '');
-  if (companyEmail) { $('#email-draft').hidden = false; $('#email-draft').href = `mailto:${companyEmail}?subject=${encodeURIComponent('Консультація FORMA')}&body=${encodeURIComponent(lines.join('\n'))}`; }
-  if (!companyEmail) {
-    text('#form-result > p', 'Адресу отримувача не налаштовано. Збережіть текст звернення.');
-    $('#form-result').scrollIntoView({ block: 'nearest', behavior: 'instant' });
-    return;
+  $('#message-draft').value = lines.join('\n');
+  $('#form-result').hidden = true; text('#copy-status', '');
+  if (companyEmail) {
+    $('#email-draft').hidden = false;
+    $('#email-draft').href = `mailto:${companyEmail}?subject=${encodeURIComponent('Консультація FORMA')}&body=${encodeURIComponent(lines.join('\n'))}`;
   }
-  // Звичайний POST із переходом на захищену сторінку сервісу.
-  // CAPTCHA залишається ввімкненою. Статус доставки не імітується.
-  $('#outgoing-inquiry')?.remove();
-  const outgoing = document.createElement('form');
-  outgoing.id = 'outgoing-inquiry';
-  outgoing.method = 'POST';
-  outgoing.action = `https://formsubmit.co/${encodeURIComponent(companyEmail)}`;
-  outgoing.hidden = true;
   const payload = {
     _subject: 'FORMA — нове звернення із сайту', _template: 'table',
+    _honey: $('#website').value,
     name: $('#name').value.trim(), phone: phoneNumber($('#phone').value),
     district: $('#district').value.trim(), service: $('#service').selectedOptions[0].textContent,
-    message: lines.join('\n'),
-    _url: window.location.href.split('#')[0]
+    message: lines.join('\n'), _url: window.location.href.split('#')[0]
   };
-  for (const [name, value] of Object.entries(payload)) {
-    const input = document.createElement('input');
-    input.type = 'hidden'; input.name = name; input.value = value;
-    outgoing.append(input);
+  submitting = true; submitButton.disabled = true;
+  inquiryForm.setAttribute('aria-busy', 'true');
+  text('#submit-label', 'Надсилаємо…');
+  showSubmissionStatus('pending', 'Надсилаємо ваше звернення. Зачекайте, будь ласка.');
+  const controls = $$('input, select, textarea:not([readonly])', inquiryForm);
+  controls.forEach(control => { control.disabled = true; });
+  let result;
+  try {
+    result = await sendInquiry(companyEmail, payload);
+  } finally {
+    submitting = false; inquiryForm.removeAttribute('aria-busy');
+    controls.forEach(control => { control.disabled = false; });
+    submitButton.disabled = false; text('#submit-label', 'Надіслати звернення');
   }
-  document.body.append(outgoing);
-  HTMLFormElement.prototype.submit.call(outgoing);
-
+  if (result.status === 'accepted') {
+    showSubmissionStatus('success', 'Дякуємо! Ваше звернення прийнято до надсилання FORMA.');
+    text('#submit-label', 'Звернення прийнято');
+    submitButton.disabled = true; // Нове звернення можливе після зміни полів.
+    return;
+  }
+  const messages = {
+    'activation-required': 'Отримання заявок ще не активовано власником FORMA. Будь ласка, напишіть нам на пошту за посиланням нижче.',
+    unconfigured: 'Отримання заявок тимчасово не налаштовано. Збережіть текст звернення.',
+    'rate-limited': 'Забагато спроб надсилання. Зачекайте кілька хвилин або напишіть нам на пошту.',
+    timeout: 'Не вдалося підтвердити надсилання: сервіс відповідає надто довго. Ваші дані залишилися у формі. Можна надіслати їх поштою.',
+    error: 'Не вдалося підтвердити надсилання. Дані залишилися у формі. Спробуйте пізніше або надішліть звернення поштою.'
+  };
+  showSubmissionStatus('error', messages[result.status] || messages.error);
+  $('#form-result').hidden = false;
 });
 $('#copy-draft').addEventListener('click', async () => {
   const draft = $('#message-draft');
