@@ -67,3 +67,9 @@
 .about-columns{font-size:18px;line-height:1.85;gap:40px}
 .principles{font-size:13px;gap:28px;flex-wrap:wrap;line-height:1.7}
 @media(max-width:760px){.about-columns{font-size:16px;line-height:1.8;gap:22px}.principles{font-size:12px;gap:12px 22px}}
+
+/* Завершальна цитата внизу контактного екрана. */
+.contact{row-gap:48px}
+.contact-closing-quote{grid-column:1/-1;margin:0;padding:40px 16px 0;border-top:1px solid #ffffff30;text-align:center;color:var(--white);font-family:var(--serif);font-size:clamp(24px,2.5vw,38px);line-height:1.45;letter-spacing:-.025em}
+.contact-closing-quote em{color:#c8d0b0;font-weight:400}
+@media(max-width:760px){.contact{row-gap:36px}.contact-closing-quote{padding:28px 0 0;font-size:25px}}
