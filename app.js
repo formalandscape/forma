@@ -46,6 +46,7 @@ text('#about-two', content.about.paragraphs[1] || '');
 text('#area-name', content.contacts.area);
 text('#area-detail', content.contacts.areaDetail);
 text('#year', new Date().getFullYear());
+text('#privacy-email', content.contacts.email || 'адресу ще не додано');
 
 const icons = {
   plan: '<rect x="6" y="6" width="30" height="30"/><path d="M6 22h30M22 6v30M11 13h6m-6 4h6m10 11h4"/>',
@@ -181,6 +182,7 @@ for (const [key, title] of [['telegram', 'Telegram'], ['viber', 'Viber']]) {
   $('#messengers').append(item);
 }
 $('#contact-placeholder').hidden = Boolean(companyPhone && companyEmail);
+if (companyEmail && !companyPhone) text('#contact-placeholder', 'Для зв’язку напишіть на електронну пошту. Телефон і месенджери ще не додано.');
 
 let estimate = null;
 $('#estimate-form').addEventListener('submit', event => {
@@ -220,7 +222,34 @@ $('#contact-form').addEventListener('submit', event => {
   if ($('#message').value.trim()) lines.push('', $('#message').value.trim());
   $('#message-draft').value = lines.join('\n'); $('#form-result').hidden = false; text('#copy-status', '');
   if (companyEmail) { $('#email-draft').hidden = false; $('#email-draft').href = `mailto:${companyEmail}?subject=${encodeURIComponent('Консультація FORMA')}&body=${encodeURIComponent(lines.join('\n'))}`; }
-  $('#form-result').scrollIntoView({ block: 'nearest', behavior: 'instant' });
+  if (!companyEmail) {
+    text('#form-result > p', 'Адресу отримувача не налаштовано. Збережіть текст звернення.');
+    $('#form-result').scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    return;
+  }
+  // Звичайний POST із переходом на захищену сторінку сервісу.
+  // CAPTCHA залишається ввімкненою. Статус доставки не імітується.
+  $('#outgoing-inquiry')?.remove();
+  const outgoing = document.createElement('form');
+  outgoing.id = 'outgoing-inquiry';
+  outgoing.method = 'POST';
+  outgoing.action = `https://formsubmit.co/${encodeURIComponent(companyEmail)}`;
+  outgoing.hidden = true;
+  const payload = {
+    _subject: 'FORMA — нове звернення із сайту', _template: 'table',
+    name: $('#name').value.trim(), phone: phoneNumber($('#phone').value),
+    district: $('#district').value.trim(), service: $('#service').selectedOptions[0].textContent,
+    message: lines.join('\n'),
+    _url: window.location.href.split('#')[0]
+  };
+  for (const [name, value] of Object.entries(payload)) {
+    const input = document.createElement('input');
+    input.type = 'hidden'; input.name = name; input.value = value;
+    outgoing.append(input);
+  }
+  document.body.append(outgoing);
+  HTMLFormElement.prototype.submit.call(outgoing);
+
 });
 $('#copy-draft').addEventListener('click', async () => {
   const draft = $('#message-draft');
