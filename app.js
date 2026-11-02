@@ -1,3 +1,4 @@
+import { t, initTranslations } from './i18n.js?v=preferences-1';
 import { content } from './content.js?v=copy-size-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
@@ -30,7 +31,7 @@ menu.addEventListener('click', () => {
 navigation.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
 document.addEventListener('click', event => { if (!event.target.closest('.header')) closeMenu(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(true); });
-window.matchMedia('(min-width: 761px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
+window.matchMedia('(min-width: 1001px)').addEventListener('change', event => { if (event.matches) closeMenu(); });
 
 // Зберігаємо типографічну композицію для початкового тексту. Зміни власника беруться з даних.
 if ($('#hero-title').textContent.replace(/\s+/g, ' ').trim().replace(/\.$/, '') !== content.hero.title) {
@@ -164,34 +165,33 @@ function phoneNumber(raw) {
 function validEmail(raw) { return typeof raw === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw); }
 const companyPhone = phoneNumber(content.contacts.phone);
 const companyEmail = validEmail(content.contacts.email) ? content.contacts.email : null;
-if (companyPhone) {
-  const button = element('button', 'phone-copy', content.contacts.phone);
-  button.type = 'button';
-  button.setAttribute('aria-label', `Скопіювати номер телефону ${content.contacts.phone}`);
+function copyContact(value, label, success, failure, slot, className) {
+  const button = element('button', `phone-copy ${className}`, value);
+  button.type = 'button'; button.setAttribute('aria-label', `${label} ${value}`);
   const status = element('div', 'phone-copy-status');
   status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
   button.addEventListener('click', async () => {
     let copied = false;
-    try { await navigator.clipboard.writeText(companyPhone); copied = true; }
+    try { await navigator.clipboard.writeText(value); copied = true; }
     catch {
-      // Резервний варіант для браузерів без доступу до Clipboard API.
-      const field = document.createElement('textarea');
-      field.value = companyPhone; field.className = 'clipboard-fallback';
-      field.setAttribute('aria-label', 'Номер для копіювання');
-      document.body.append(field); field.select(); field.setSelectionRange(0, field.value.length);
+      const field = document.createElement('textarea'); field.value = value; field.className = 'clipboard-fallback';
+      document.body.append(field); field.select(); field.setSelectionRange(0, value.length);
       try { copied = document.execCommand('copy'); } catch { /* Ручне копіювання нижче. */ }
       field.remove(); button.focus({ preventScroll: true });
     }
-    status.textContent = copied ? 'Номер скопійовано' : 'Номер виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».';
+    status.textContent = copied ? success : failure;
     if (!copied) {
       const range = document.createRange(); range.selectNodeContents(button);
       const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
     }
   });
-  $('#phone-slot').replaceChildren(button, status);
+  $(slot).replaceChildren(button, status);
+}
+if (companyPhone) {
+  copyContact(companyPhone, 'Скопіювати номер телефону', 'Номер скопійовано', 'Номер виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».', '#phone-slot', 'phone-number-copy');
   $('#quick-call').href = `tel:${companyPhone}`; $('#quick-call').setAttribute('aria-label', 'Зателефонувати до FORMA'); text('#quick-call-label', 'Зателефонувати');
 }
-if (companyEmail) { const link = element('a', '', companyEmail); link.href = `mailto:${companyEmail}`; $('#email-slot').replaceChildren(link); }
+if (companyEmail) copyContact(companyEmail, 'Скопіювати пошту', 'Пошту скопійовано', 'Адресу виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».', '#email-slot', 'email-copy');
 for (const [key, title] of [['telegram', 'Telegram'], ['viber', 'Viber']]) {
   const raw = content.contacts[key]; let href;
   try { const url = new URL(raw); if ((url.protocol === 'https:' && ['t.me', 'telegram.me', 'www.viber.com', 'invite.viber.com'].includes(url.hostname)) || (key === 'viber' && url.protocol === 'viber:')) href = url.href; } catch { /* Залишити заглушку. */ }
@@ -257,8 +257,9 @@ inquiryForm.addEventListener('submit', async event => {
     showSubmissionStatus('error', 'Надсилання заблоковано перевіркою від спаму. Оновіть сторінку або напишіть нам на пошту.');
     return;
   }
-  const lines = ['Вітаю, FORMA!', `Мене звати ${$('#name').value.trim()}.`, `Телефон: ${phoneNumber($('#phone').value)}`, `Розташування: ${$('#district').value.trim()}`, `Напрям: ${$('#service').selectedOptions[0].textContent}`];
+  let lines = ['Вітаю, FORMA!', `Мене звати ${$('#name').value.trim()}.`, `Телефон: ${phoneNumber($('#phone').value)}`, `Розташування: ${$('#district').value.trim()}`, `Напрям: ${$('#service').selectedOptions[0].textContent}`];
   if (estimate) lines.push(`Площа ділянки: ${estimate.area ? `${estimate.area} м²` : 'уточнити'}`, `Стан ділянки: ${estimate.state || 'уточнити'}`, 'Прошу підготувати індивідуальний розрахунок.');
+  lines = lines.map(line => t(line));
   if ($('#message').value.trim()) lines.push('', $('#message').value.trim());
   $('#message-draft').value = lines.join('\n');
   $('#form-result').hidden = true; text('#copy-status', '');
@@ -267,7 +268,7 @@ inquiryForm.addEventListener('submit', async event => {
     $('#email-draft').href = `mailto:${companyEmail}?subject=${encodeURIComponent('Консультація FORMA')}&body=${encodeURIComponent(lines.join('\n'))}`;
   }
   const payload = {
-    subject: 'FORMA — нове звернення із сайту',
+    subject: t('FORMA — нове звернення із сайту'),
     _gotcha: $('#website').value,
     name: $('#name').value.trim(), phone: phoneNumber($('#phone').value),
     district: $('#district').value.trim(), service: $('#service').selectedOptions[0].textContent,
@@ -337,3 +338,5 @@ $$('.button > span, .text-link > span, .header-contact > span, .zoom-icon').forE
   if (span.textContent.trim() !== '↗') return;
   span.textContent = ''; span.classList.add('arrow-icon'); span.setAttribute('aria-hidden', 'true');
 });
+
+initTranslations();

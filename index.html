@@ -11,8 +11,9 @@
   <meta property="og:locale" content="uk_UA">
   <title>FORMA — ландшафтний дизайн на правому березі Києва</title>
   <link rel="icon" href="assets/forma.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=closing-quote-1">
-  <script type="module" src="app.js?v=closing-quote-1"></script>
+  <script src="preferences.js?v=preferences-1"></script>
+  <link rel="stylesheet" href="styles.css?v=preferences-1">
+  <script type="module" src="app.js?v=preferences-1"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Перейти до вмісту</a>
@@ -22,6 +23,10 @@
       <a href="#about">Про нас</a><a href="#services">Послуги</a><a href="#projects">Наші проєкти</a><a href="#area">Територія роботи</a><a href="#contact">Контакти</a>
     </nav>
     <a class="header-contact" href="#contact">Обговорити проєкт <span aria-hidden="true">↗</span></a>
+    <div class="site-tools">
+      <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Увімкнути темну тему" aria-pressed="false"><svg class="theme-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15A9 9 0 0 1 9 4a8.5 8.5 0 1 0 11 11Z"/></svg><svg class="theme-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg></button>
+      <div class="language-switch" role="group" aria-label="Мова сайту"><button type="button" data-language-choice="uk" aria-label="Українська" aria-pressed="true">UA</button><button type="button" data-language-choice="en" aria-label="Англійська" aria-pressed="false">EN</button></div>
+    </div>
     <button class="menu-toggle" aria-controls="navigation" aria-expanded="false" aria-label="Відкрити меню"><span></span><span></span></button>
   </header>
   <main id="main">
@@ -64,7 +69,7 @@
   <footer class="footer"><div class="footer-top"><a class="brand" href="#home" aria-label="FORMA — на початок">FORMA<span>ЛАНДШАФТ І АРХІТЕКТУРА</span></a><p>Природа. Простір. Ваша FORMA.</p><a href="#home" class="back-top">На початок <span aria-hidden="true">↑</span></a></div><div class="footer-bottom"><span>© <span id="year">2026</span> FORMA</span><button id="privacy-open" type="button">Про персональні дані</button></div></footer>
   <a id="quick-call" class="quick-call" href="#contact" aria-label="Контакти FORMA — номер телефону ще не додано"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 3 3 5-2 2c1 3 3 5 6 6l2-2 5 3c-1 6-6 4-10 1S2 8 3 5z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg><span id="quick-call-label">Контакти</span></a>
   <dialog id="project-dialog" aria-labelledby="dialog-title"><button class="dialog-close" aria-label="Закрити перегляд">×</button><div class="dialog-image-wrap"><img id="dialog-image" alt=""><button id="previous-project" class="image-arrow previous" aria-label="Попереднє фото">←</button><button id="next-project" class="image-arrow next" aria-label="Наступне фото">→</button></div><div class="dialog-content"><p class="eyebrow" id="dialog-tag"></p><h2 id="dialog-title"></h2><p id="dialog-description"></p><a class="text-link" href="#contact" id="dialog-contact">Обговорити схожу ідею <span aria-hidden="true">↗</span></a></div></dialog>
-  <dialog id="privacy-dialog" aria-labelledby="privacy-title"><button class="dialog-close" aria-label="Закрити інформацію">×</button><div class="dialog-content"><p class="eyebrow">ПЕРСОНАЛЬНІ ДАНІ</p><h2 id="privacy-title">Ваші дані —<br>під вашим контролем.</h2><p>Після натискання «Надіслати звернення» ім’я, телефон, місцевість, обраний напрям, повідомлення та параметри розрахунку передаються сервісу Formspree для доставки на електронну пошту FORMA. Ці дані потрібні для відповіді на ваш запит.</p><p>Власник FORMA отримує звернення на <span id="privacy-email">markkon2013@gmail.com</span>. З питань обробки чи видалення даних звертайтеся на цю адресу. Умови стороннього сервісу: https://formspree.io/legal/privacy-policy/. Сайт не записує введені дані в локальне сховище.</p><p>Сайт не використовує аналітичні файли cookie. Хостинг може обробляти технічні дані запитів відповідно до власних умов. Для захисту від автоматичних звернень використовується приховане поле-пастка та перевірки сервісу Formspree. Відповідь про приймання запиту не є підтвердженням доставки листа у вхідні.</p></div></dialog>
+  <dialog id="privacy-dialog" aria-labelledby="privacy-title"><button class="dialog-close" aria-label="Закрити інформацію">×</button><div class="dialog-content"><p class="eyebrow">ПЕРСОНАЛЬНІ ДАНІ</p><h2 id="privacy-title">Ваші дані —<br>під вашим контролем.</h2><p>Після натискання «Надіслати звернення» ім’я, телефон, місцевість, обраний напрям, повідомлення та параметри розрахунку передаються сервісу Formspree для доставки на електронну пошту FORMA. Ці дані потрібні для відповіді на ваш запит.</p><p>Власник FORMA отримує звернення на <span id="privacy-email">markkon2013@gmail.com</span>. З питань обробки чи видалення даних звертайтеся на цю адресу. Умови стороннього сервісу: https://formspree.io/legal/privacy-policy/. Сайт не записує введені дані в локальне сховище.</p><p>Зберігаємо лише обрані мову й тему в браузері.</p><p>Сайт не використовує аналітичні файли cookie. Хостинг може обробляти технічні дані запитів відповідно до власних умов. Для захисту від автоматичних звернень використовується приховане поле-пастка та перевірки сервісу Formspree. Відповідь про приймання запиту не є підтвердженням доставки листа у вхідні.</p></div></dialog>
   <noscript><div class="noscript-note">Увімкніть JavaScript для галереї, порівняння та підготовки звернення. FORMA працює виключно на правому березі міста Києва. Контакти ще не додано.</div></noscript>
 </body>
 </html>

@@ -73,3 +73,53 @@
 .contact-closing-quote{grid-column:1/-1;margin:0;padding:40px 16px 0;border-top:1px solid #ffffff30;text-align:center;color:var(--white);font-family:var(--serif);font-size:clamp(24px,2.5vw,38px);line-height:1.45;letter-spacing:-.025em}
 .contact-closing-quote em{color:#c8d0b0;font-weight:400}
 @media(max-width:760px){.contact{row-gap:36px}.contact-closing-quote{padding:28px 0 0;font-size:25px}}
+/* Налаштування мови та теми. */
+.site-tools{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.theme-toggle{display:grid;place-items:center;width:36px;height:36px;padding:8px;border:1px solid var(--line);border-radius:50%;background:none;color:inherit}
+.theme-toggle svg{grid-area:1/1;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.theme-sun{display:none}
+[data-theme=dark] .theme-moon{display:none}
+[data-theme=dark] .theme-sun{display:block}
+.language-switch{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:30px}
+.language-switch button{border:0;background:none;color:var(--muted);font-size:10px;min-width:29px;height:28px;padding:0 6px;border-radius:20px}
+.language-switch button[aria-pressed=true]{background:var(--green);color:#f8f7f2}
+html{color-scheme:light}
+html[data-theme=dark]{color-scheme:dark;--ink:#e6eadd;--muted:#abb8a6;--line:#435247;--surface:#192b22}
+[data-theme=dark] body{background:#14231d;color:var(--ink)}
+[data-theme=dark] .header{background:#14231df5}
+[data-theme=dark] .services,[data-theme=dark] .estimate{background:#1a2c23}
+[data-theme=dark] .hero h1,[data-theme=dark] .section-label,[data-theme=dark] .area-lead,[data-theme=dark] .filters button.active,[data-theme=dark] .outline{color:#e6eadd}
+[data-theme=dark] h2 em,[data-theme=dark] .hero h1 em{color:#acba94}
+[data-theme=dark] .process,[data-theme=dark] .contact{background:#1b3429}
+[data-theme=dark] .services .service-card.reveal{background:#22362b}
+[data-theme=dark] .services .service-card h3{color:#e8ecde}
+[data-theme=dark] .services .service-card li{border-color:#4b5b45}
+[data-theme=dark] .services .service-card:focus-within{background:#3b4c30}
+[data-theme=dark] .filters button.active:after{background:#b8c5a4}
+[data-theme=dark] .outline:hover{background:#2e4033}
+[data-theme=dark] .footer-top p{color:#b4c0a5}
+[data-theme=dark] dialog{background:#192b22}
+[data-theme=dark] .dialog-close{background:#2f4636;color:#e6eadd}
+[data-theme=dark] .form-result{background:#233e2d}
+[data-theme=dark] .quick-call{background:#243a2e;color:#edf0e4}
+[data-theme=dark] .language-switch button[aria-pressed=true]{background:#d7ddbd;color:#203d32}
+[data-theme=dark] .theme-toggle:hover{background:#2b4032}
+[data-theme=dark] .estimate-form,[data-theme=dark] .contact-form{border-color:#53624d}
+[data-theme=dark] .estimate-form :is(input,select,textarea):focus{border-bottom-color:#d7ddbd}
+@media(hover:hover) and (pointer:fine){[data-theme=dark] .services .service-card:hover{background:#3b4c30}}
+@media(max-width:1250px){.header{gap:18px}.header nav{gap:18px}.header-contact{display:none}}
+@media(max-width:1000px){
+ .header{height:78px}
+ .header nav{display:none;position:absolute;top:78px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;background:var(--white);padding:15px 24px 28px;border-bottom:1px solid var(--line);max-height:calc(100svh - 78px);overflow:auto}
+ .header nav.open{display:flex}
+ .header nav a{font-size:14px;padding:14px 0}
+ .menu-toggle{display:flex;flex-direction:column;justify-content:center;gap:6px;border:1px solid #abb6a3;width:44px;height:44px;padding:12px;background:none;flex-shrink:0}
+ .menu-toggle span{height:1px;width:18px;background:var(--green)}
+ .site-tools{margin-left:auto}
+ [data-theme=dark] .header nav{background:#192b22}
+ [data-theme=dark] .menu-toggle span{background:#d7ddbd}
+}
+@media(max-width:500px){.header{padding:0 18px;gap:10px}.header .brand{font-size:27px}.header .brand span{font-size:5px;letter-spacing:.1em}.site-tools{gap:7px}.menu-toggle{width:36px;height:36px;padding:8px}.theme-toggle{width:32px;height:32px;padding:6px}.language-switch{padding:2px}.language-switch button{min-width:25px;height:25px;padding:0 4px;font-size:9px}}
+[data-theme=dark] .header nav a::after{background:#b8c5a4}
+.menu-toggle[aria-expanded=true] span:first-child{transform:translateY(3.5px) rotate(45deg)}
+.menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-3.5px) rotate(-45deg)}

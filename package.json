@@ -6,7 +6,7 @@
   "description": "FORMA — ландшафтний дизайн на правому березі Києва",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check app.js && node --check content.js && node --check server.mjs && node --check inquiry.js",
+    "check": "node --check app.js && node --check content.js && node --check server.mjs && node --check inquiry.js && node --check i18n.js && node --check translations.js && node --check preferences.js",
     "test": "node tests/inquiry.test.mjs"
   },
   "engines": { "node": ">=20" }
