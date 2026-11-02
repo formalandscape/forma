@@ -46,7 +46,7 @@ export const content = {
   ],
   contacts: {
     // Приклад формату телефону: +380XXXXXXXXX. null залишає видиму заглушку.
-    phone: null, email: 'markkon2013@gmail.com',
+    phone: '+380988185461', email: 'markkon2013@gmail.com',
     telegram: null, viber: null,
     area: 'Виключно правий берег міста Києва',
     areaDetail: 'Працюємо лише в межах міста. Київська область і лівий берег не входять до території обслуговування.'

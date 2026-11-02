@@ -1,4 +1,4 @@
-import { content } from './content.js?v=formspree-1';
+import { content } from './content.js?v=ui-clean-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -58,7 +58,6 @@ services.forEach((service, index) => {
   const card = element('article', 'service-card reveal');
   card.style.setProperty('--delay', `${index * 90}ms`);
   const top = element('div', 'service-top');
-  top.append(element('span', '', String(index + 1).padStart(2, '0')));
   const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   icon.setAttribute('viewBox', '0 0 42 42'); icon.setAttribute('aria-hidden', 'true');
   icon.innerHTML = icons[service.icon] || icons.plan;
@@ -77,7 +76,7 @@ for (const select of [$('#service'), $('#estimate-service')]) {
 }
 content.process.forEach((step, index) => {
   const item = element('li', 'reveal'); item.style.setProperty('--delay', `${index * 90}ms`);
-  item.append(element('span', 'step-number', String(index + 1).padStart(2, '0')), element('h3', '', step.title), element('p', '', step.text));
+  item.append(element('h3', '', step.title), element('p', '', step.text));
   $('#steps').append(item);
 });
 
@@ -90,7 +89,7 @@ function refreshDialog() {
   if (!project) return;
   const image = $('#dialog-image'); image.src = project.full; image.alt = project.alt;
   text('#dialog-title', project.title); text('#dialog-description', project.description);
-  text('#dialog-tag', `${project.demonstration ? 'ФОТО ДЛЯ НАТХНЕННЯ' : 'ПРОЄКТ FORMA'} · ${selectedProject + 1} / ${visibleProjects.length}`);
+  text('#dialog-tag', project.demonstration ? 'ФОТО ДЛЯ НАТХНЕННЯ' : 'ПРОЄКТ FORMA');
   $('#previous-project').hidden = $('#next-project').hidden = visibleProjects.length < 2;
 }
 function showDialog(dialog) { dialog.showModal(); document.body.classList.add('modal-open'); }
@@ -108,7 +107,7 @@ function renderProjects() {
     button.addEventListener('click', () => { selectedProject = index; refreshDialog(); showDialog(projectDialog); });
     const info = element('div', 'project-info'); const title = element('div');
     title.append(element('h3', '', project.title), element('p', '', project.subtitle));
-    info.append(title, element('span', 'project-number', String(index + 1).padStart(2, '0')));
+    info.append(title);
     card.append(button, info); grid.append(card);
   });
   if (!visibleProjects.length) grid.append(element('p', 'small-note', 'Проєкти цієї категорії ще не додано.'));
@@ -120,7 +119,6 @@ content.categories.forEach(category => {
   if (!count && category.id !== 'all') return;
   const button = element('button', category.id === 'all' ? 'active' : '', category.title); button.type = 'button'; button.dataset.filter = category.id;
   button.setAttribute('aria-pressed', String(category.id === 'all'));
-  button.append(element('sup', '', String(count).padStart(2, '0')));
   button.addEventListener('click', () => {
     currentFilter = category.id;
     $$('#project-filters button').forEach(item => { const active = item === button; item.classList.toggle('active', active); item.setAttribute('aria-pressed', String(active)); });
