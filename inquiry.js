@@ -1,11 +1,10 @@
-// Офіційний AJAX endpoint: https://formsubmit.co/ajax-documentation
-// Відповідь сервісу означає приймання запиту, а не перевірену доставку у Gmail.
-export async function sendInquiry(recipient, payload, { fetchImpl = globalThis.fetch, timeoutMs = 20000 } = {}) {
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient || '')) return { status: 'unconfigured' };
+// Formspree AJAX: підтвердження приймання не є перевіркою доставки у Gmail.
+export async function sendInquiry(endpoint, payload, { fetchImpl = globalThis.fetch, timeoutMs = 20000 } = {}) {
+  if (!/^https:\/\/formspree\.io\/f\/[a-zA-Z0-9]+$/.test(endpoint || '')) return { status: 'unconfigured' };
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetchImpl(`https://formsubmit.co/ajax/${encodeURIComponent(recipient)}`, {
+    const response = await fetchImpl(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify(payload),
@@ -15,12 +14,7 @@ export async function sendInquiry(recipient, payload, { fetchImpl = globalThis.f
     });
     if (!response.ok) return { status: response.status === 429 ? 'rate-limited' : 'error' };
     const result = await response.json();
-    if (!result || typeof result !== 'object') return { status: 'error' };
-    // Деякі відповіді про активацію також мають success: true.
-    if (typeof result.message === 'string' && /activat|confirm.{0,40}(email|address)|verif.{0,40}(email|address)/i.test(result.message)) {
-      return { status: 'activation-required' };
-    }
-    if (result.success === true || result.success === 'true') return { status: 'accepted' };
+    if (result?.ok === true && !result.errors?.length) return { status: 'accepted' };
     return { status: 'error' };
   } catch {
     return { status: controller.signal.aborted ? 'timeout' : 'error' };

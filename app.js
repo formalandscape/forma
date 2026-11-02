@@ -1,5 +1,5 @@
-import { content } from './content.js';
-import { sendInquiry } from './inquiry.js';
+import { content } from './content.js?v=formspree-1';
+import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -249,11 +249,11 @@ inquiryForm.addEventListener('submit', async event => {
     $('#email-draft').href = `mailto:${companyEmail}?subject=${encodeURIComponent('Консультація FORMA')}&body=${encodeURIComponent(lines.join('\n'))}`;
   }
   const payload = {
-    _subject: 'FORMA — нове звернення із сайту', _template: 'table',
-    _honey: $('#website').value,
+    subject: 'FORMA — нове звернення із сайту',
+    _gotcha: $('#website').value,
     name: $('#name').value.trim(), phone: phoneNumber($('#phone').value),
     district: $('#district').value.trim(), service: $('#service').selectedOptions[0].textContent,
-    message: lines.join('\n'), _url: window.location.href.split('#')[0]
+    message: lines.join('\n'), source: window.location.href.split('#')[0]
   };
   submitting = true; submitButton.disabled = true;
   inquiryForm.setAttribute('aria-busy', 'true');
@@ -263,7 +263,7 @@ inquiryForm.addEventListener('submit', async event => {
   controls.forEach(control => { control.disabled = true; });
   let result;
   try {
-    result = await sendInquiry(companyEmail, payload);
+    result = await sendInquiry(content.inquiryEndpoint, payload);
   } finally {
     submitting = false; inquiryForm.removeAttribute('aria-busy');
     controls.forEach(control => { control.disabled = false; });
@@ -276,7 +276,6 @@ inquiryForm.addEventListener('submit', async event => {
     return;
   }
   const messages = {
-    'activation-required': 'Отримання заявок ще не активовано власником FORMA. Будь ласка, напишіть нам на пошту за посиланням нижче.',
     unconfigured: 'Отримання заявок тимчасово не налаштовано. Збережіть текст звернення.',
     'rate-limited': 'Забагато спроб надсилання. Зачекайте кілька хвилин або напишіть нам на пошту.',
     timeout: 'Не вдалося підтвердити надсилання: сервіс відповідає надто довго. Ваші дані залишилися у формі. Можна надіслати їх поштою.',
