@@ -1,4 +1,4 @@
-import { content } from './content.js?v=services-2';
+import { content } from './content.js?v=copy-size-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -45,7 +45,6 @@ if ($('#about-title').textContent.replace(/\s+/g, ' ').trim() !== content.about.
 text('#about-one', content.about.paragraphs[0] || '');
 text('#about-two', content.about.paragraphs[1] || '');
 text('#area-name', content.contacts.area);
-text('#area-detail', content.contacts.areaDetail);
 text('#year', new Date().getFullYear());
 text('#privacy-email', content.contacts.email || 'адресу ще не додано');
 

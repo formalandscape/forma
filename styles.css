@@ -62,3 +62,8 @@
  .services .service-card:hover{background:#d7ddbd;translate:0 -5px;box-shadow:0 12px 28px #203d3214}
 }
 @media(prefers-reduced-motion:reduce){.services .service-card:hover{translate:none}.service-card:hover .service-photo img{transform:none}}
+
+/* Читабельніший текст у розділі «Про нас». */
+.about-columns{font-size:18px;line-height:1.85;gap:40px}
+.principles{font-size:13px;gap:28px;flex-wrap:wrap;line-height:1.7}
+@media(max-width:760px){.about-columns{font-size:16px;line-height:1.8;gap:22px}.principles{font-size:12px;gap:12px 22px}}
