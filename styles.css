@@ -31,3 +31,31 @@
 .phone-copy:hover{opacity:.8}
 .phone-copy-status{min-height:18px;margin-top:5px;font-family:var(--sans);font-size:10px;line-height:1.6;color:#d7dfce}
 .clipboard-fallback{position:fixed;left:-10000px;top:0;width:1px;height:1px}
+
+/* Послуги — окремі фотокартки замість суцільної таблиці. */
+.services{background:#eeeee5}
+.services .section-heading{margin-bottom:46px}
+.services .service-grid{gap:24px;align-items:stretch}
+.services .service-card{border:0;padding:0;background:var(--white);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 5px 20px #203d3205}
+.services .service-card:hover{background:var(--white)}
+.service-photo{position:relative;aspect-ratio:1.55;overflow:hidden;background:var(--sand)}
+.service-photo img{width:100%;height:100%;object-fit:cover;transition:transform .7s ease}
+.service-card:hover .service-photo img{transform:scale(1.035)}
+.service-photo figcaption{position:absolute;bottom:14px;left:16px;background:#f8f7f2ed;color:var(--green);padding:4px 9px;font-size:8px;letter-spacing:.06em}
+.service-content{padding:30px;display:flex;flex-direction:column;flex:1}
+.services .service-card h3{font-size:clamp(25px,2.3vw,36px);line-height:1.15;letter-spacing:-.035em;margin:0;max-width:100%;min-height:2.3em;color:var(--green)}
+.service-content>p{font-size:12px;line-height:1.8;color:var(--muted);margin-top:19px;min-height:5.4em}
+.services .service-card ul{margin:24px 0;flex:1;font-size:11px}
+.services .service-card li{padding:10px 0;border-bottom:1px solid #d5d6cb;color:var(--muted)}
+.services .service-card li::before{content:none}
+.services .service-card .service-note{border:0;padding-top:0;font-size:9px;line-height:1.6;margin-top:0;color:var(--muted)}
+.services .service-card .text-link{font-size:11px;border:0;background:var(--green);color:var(--white);padding:14px 16px;margin-top:24px;gap:15px;min-height:48px}
+.services .service-card .text-link:hover{background:#365345}
+.services .service-featured,.services .service-featured:hover{background:var(--green)}
+.services .service-featured h3{color:var(--white)}
+.services .service-featured .service-content>p,.services .service-featured li,.services .service-featured .service-note{color:#c5d0bf}
+.services .service-featured li{border-color:#ffffff26}
+.services .service-featured .text-link{background:var(--sand);color:var(--green)}
+.services .service-featured .text-link:hover{background:#ece6da}
+@media(max-width:1050px){.services .service-grid{gap:16px}.service-content{padding:24px}.services .service-card h3{font-size:27px}.service-content>p{font-size:11px}}
+@media(max-width:760px){.services .service-grid{gap:25px}.services .section-heading{margin-bottom:30px}.service-photo{aspect-ratio:1.6}.service-content{padding:27px}.services .service-card h3{font-size:32px;min-height:0}.service-content>p{font-size:13px;min-height:0}.services .service-card ul{margin:20px 0}.services .service-card .text-link{font-size:12px}.services .service-card .service-note{font-size:10px}}

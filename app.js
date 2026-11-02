@@ -1,4 +1,4 @@
-import { content } from './content.js?v=ui-clean-1';
+import { content } from './content.js?v=services-2';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -49,25 +49,24 @@ text('#area-detail', content.contacts.areaDetail);
 text('#year', new Date().getFullYear());
 text('#privacy-email', content.contacts.email || 'адресу ще не додано');
 
-const icons = {
-  plan: '<rect x="6" y="6" width="30" height="30"/><path d="M6 22h30M22 6v30M11 13h6m-6 4h6m10 11h4"/>',
-  leaf: '<path d="M9 35C7 17 19 6 36 6c0 17-8 30-27 29zm0 0L29 13M16 27l-1-10m7 4h10"/>',
-  path: '<path d="M5 36h32M8 27h25M12 18h17M16 9h9M9 36l7-27m17 27L25 9"/>'
-};
 services.forEach((service, index) => {
   const card = element('article', 'service-card reveal');
+  card.classList.toggle('service-featured', service.id === 'planting');
   card.style.setProperty('--delay', `${index * 90}ms`);
-  const top = element('div', 'service-top');
-  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  icon.setAttribute('viewBox', '0 0 42 42'); icon.setAttribute('aria-hidden', 'true');
-  icon.innerHTML = icons[service.icon] || icons.plan;
-  top.append(icon);
+  const photo = element('figure', 'service-photo');
+  const image = element('img');
+  image.src = service.image || 'assets/photos/green-900.webp';
+  image.alt = service.imageAlt || service.title;
+  image.loading = 'lazy'; image.decoding = 'async'; image.width = 900; image.height = 600;
+  photo.append(image, element('figcaption', '', 'Фото для натхнення'));
+  const body = element('div', 'service-content');
   const list = element('ul');
   service.details.forEach(detail => list.append(element('li', '', detail)));
-  const note = element('div', 'service-note', service.confirmed ? 'Склад робіт визначаємо індивідуально' : 'Можлива послуга · потребує підтвердження');
-  const link = element('a', 'text-link', 'Обговорити напрям'); link.href = '#contact'; link.append(element('span', '', '↗'));
+  const note = element('div', 'service-note', service.confirmed ? 'Склад робіт визначаємо індивідуально' : 'Доступність і склад послуги уточнюємо на консультації');
+  const link = element('a', 'text-link', 'Обговорити проєкт'); link.href = '#contact'; link.append(element('span', '', '↗'));
   link.addEventListener('click', () => { $('#service').value = service.id; clearSubmissionResult(); });
-  card.append(top, element('h3', '', service.title), element('p', '', service.description), list, note, link);
+  body.append(element('h3', '', service.title), element('p', '', service.description), list, note, link);
+  card.append(photo, body);
   $('#service-grid').append(card);
 });
 for (const select of [$('#service'), $('#estimate-service')]) {
