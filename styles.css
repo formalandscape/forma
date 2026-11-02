@@ -51,11 +51,14 @@
 .services .service-card .service-note{border:0;padding-top:0;font-size:9px;line-height:1.6;margin-top:0;color:var(--muted)}
 .services .service-card .text-link{font-size:11px;border:0;background:var(--green);color:var(--white);padding:14px 16px;margin-top:24px;gap:15px;min-height:48px}
 .services .service-card .text-link:hover{background:#365345}
-.services .service-featured,.services .service-featured:hover{background:var(--green)}
-.services .service-featured h3{color:var(--white)}
-.services .service-featured .service-content>p,.services .service-featured li,.services .service-featured .service-note{color:#c5d0bf}
-.services .service-featured li{border-color:#ffffff26}
-.services .service-featured .text-link{background:var(--sand);color:var(--green)}
-.services .service-featured .text-link:hover{background:#ece6da}
 @media(max-width:1050px){.services .service-grid{gap:16px}.service-content{padding:24px}.services .service-card h3{font-size:27px}.service-content>p{font-size:11px}}
 @media(max-width:760px){.services .service-grid{gap:25px}.services .section-heading{margin-bottom:30px}.service-photo{aspect-ratio:1.6}.service-content{padding:27px}.services .service-card h3{font-size:32px;min-height:0}.service-content>p{font-size:13px;min-height:0}.services .service-card ul{margin:20px 0}.services .service-card .text-link{font-size:12px}.services .service-card .service-note{font-size:10px}}
+
+/* Однакові світлі картки з оливковим наведенням на всю площу. */
+.services .service-card.reveal{background:var(--white);transition:background-color .32s ease,box-shadow .32s ease,translate .32s ease,opacity .75s ease,transform .75s ease}
+.services .service-card.is-visible{transition-delay:0s}
+.services .service-card:focus-within{background:#d7ddbd;box-shadow:0 12px 28px #203d3214}
+@media(hover:hover) and (pointer:fine){
+ .services .service-card:hover{background:#d7ddbd;translate:0 -5px;box-shadow:0 12px 28px #203d3214}
+}
+@media(prefers-reduced-motion:reduce){.services .service-card:hover{translate:none}.service-card:hover .service-photo img{transform:none}}

@@ -51,7 +51,6 @@ text('#privacy-email', content.contacts.email || 'адресу ще не дод�
 
 services.forEach((service, index) => {
   const card = element('article', 'service-card reveal');
-  card.classList.toggle('service-featured', service.id === 'planting');
   card.style.setProperty('--delay', `${index * 90}ms`);
   const photo = element('figure', 'service-photo');
   const image = element('img');
