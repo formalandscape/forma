@@ -1,6 +1,6 @@
 import { initSmoothNavigation } from './navigation.js?v=motion-2';
 import { t, initTranslations } from './i18n.js?v=messengers-1';
-import { content } from './content.js?v=messengers-1';
+import { content } from './content.js?v=messengers-2';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -194,6 +194,7 @@ if (companyPhone) {
 }
 if (companyEmail) copyContact(companyEmail, 'Скопіювати пошту', 'Пошту скопійовано', 'Адресу виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».', '#email-slot', 'email-copy');
 for (const [key, title] of [['telegram', 'Telegram'], ['viber', 'Viber']]) {
+  if (content.contacts.hiddenMessengers?.includes(key)) continue;
   const raw = content.contacts[key]; let href;
   try {
     const url = new URL(raw);

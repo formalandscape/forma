@@ -49,6 +49,7 @@ export const content = {
     phone: '+380988185461', email: 'markkon2013@gmail.com',
     telegram: 'https://t.me/Olegkonovalenko78',
     viber: 'viber://chat?number=%2B380988185461',
+    hiddenMessengers: ['viber'],
     area: 'Виключно правий берег міста Києва',
   }
 };
