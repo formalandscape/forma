@@ -1,4 +1,4 @@
-import { chatCopy } from './chat-copy.js?v=chat-faq-2';
+import { chatCopy } from './chat-copy.js?v=chat-motion-1';
 
 export function initChat({ chatEndpoint, contacts }) {
   // No provider credentials or automatic requests in the browser.
@@ -17,8 +17,9 @@ export function initChat({ chatEndpoint, contacts }) {
   const $ = selector => root.querySelector(selector);
   const launcher = $('.chat-launcher'), panel = $('.chat-panel'), log = $('.chat-messages');
   const input = $('#chat-question'), form = $('.chat-form'), status = $('.chat-status');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const history = [];
-  let busy = false, controller, errorKey = '', renderedMessages = [];
+  let busy = false, activeReply, closing, errorKey = '', renderedMessages = [];
   function renderMessages() {
     const messages = [chatCopy.intro, ...history.map(item => item.topic !== undefined ? chatCopy[item.role === 'user' ? 'questions' : 'answers'][item.topic] : item.content)];
     if (renderedMessages.some((text, index) => messages[index] !== text)) { log.replaceChildren(); renderedMessages = []; }
@@ -39,32 +40,101 @@ export function initChat({ chatEndpoint, contacts }) {
     $('.chat-form label').textContent = c.label; input.placeholder = c.placeholder;
     $('.chat-form button').textContent = c.send; $('.chat-privacy').textContent = c.privacy;
     $('.chat-footer a').textContent = c.telegram; $('.chat-footer a').href = contacts.telegram;
-    $('.chat-footer button').textContent = c.clear; $('.chat-footer button').disabled = busy;
+    $('.chat-footer button').textContent = c.clear;
     form.hidden = !endpoint; input.disabled = busy; $('.chat-form button').disabled = busy;
-    status.textContent = busy ? c.pending : errorKey ? c[errorKey] : endpoint ? '' : c.hint;
-    topicButtons.forEach(button => { button.disabled = busy; });
+    status.textContent = busy ? c.typing : errorKey ? c[errorKey] : endpoint ? '' : c.hint;
+    topicButtons.forEach(button => { button.setAttribute('aria-disabled', String(busy)); });
     // Do not rebuild the live log while someone is typing or only changing status.
     renderMessages();
+  }
+  function beginReply() {
+    const task = new AbortController(); task.started = performance.now();
+    activeReply = task; busy = true; errorKey = '';
+    log.setAttribute('aria-busy', 'true'); update();
+    const dots = document.createElement('div');
+    dots.className = 'chat-bubble chat-typing'; dots.setAttribute('aria-hidden', 'true');
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    log.append(dots); log.scrollTop = log.scrollHeight;
+    return task;
+  }
+  async function presentReply(item, task) {
+    if (task.signal.aborted) return;
+    // The three-second pause is a visual simulation for ready-made answers.
+    if (!reducedMotion.matches) await new Promise(resolve => {
+      const finish = () => { clearTimeout(timer); task.signal.removeEventListener('abort', finish); reducedMotion.removeEventListener('change', finish); resolve(); };
+      const timer = setTimeout(finish, Math.max(0, 3000 - (performance.now() - task.started)));
+      task.signal.addEventListener('abort', finish, { once: true }); reducedMotion.addEventListener('change', finish, { once: true });
+    });
+    if (task.signal.aborted) return;
+    $('.chat-typing')?.remove(); history.push(item); renderMessages();
+    const bubble = log.lastElementChild, message = bubble.textContent;
+    if (reducedMotion.matches) return;
+    bubble.textContent = ''; bubble.classList.add('is-writing'); bubble.setAttribute('aria-hidden', 'true');
+    const letters = Array.from(message), duration = Math.min(4400, Math.max(1400, letters.length * 18));
+    await new Promise(resolve => {
+      let frame, start, written = 0;
+      const finish = () => {
+        cancelAnimationFrame(frame); task.signal.removeEventListener('abort', finish); reducedMotion.removeEventListener('change', finish);
+        if (!task.signal.aborted) bubble.textContent = message;
+        bubble.classList.remove('is-writing'); bubble.removeAttribute('aria-hidden'); resolve();
+      };
+      const tick = time => {
+        if (task.signal.aborted || reducedMotion.matches) return finish();
+        start ??= time;
+        const count = Math.min(letters.length, Math.floor((time - start) / duration * letters.length));
+        const follow = log.scrollHeight - log.scrollTop - log.clientHeight < 40;
+        if (count > written) {
+          const span = document.createElement('span'); span.className = 'chat-letter';
+          span.textContent = letters.slice(written, count).join(''); bubble.append(span); written = count;
+          if (follow) log.scrollTop = log.scrollHeight;
+        }
+        if (count === letters.length) return finish();
+        frame = requestAnimationFrame(tick);
+      };
+      task.signal.addEventListener('abort', finish, { once: true }); reducedMotion.addEventListener('change', finish, { once: true });
+      frame = requestAnimationFrame(tick);
+    });
+  }
+  function finishReply(task) {
+    if (activeReply !== task) return;
+    activeReply = null; busy = false; $('.chat-typing')?.remove();
+    history.splice(0, Math.max(0, history.length - 20));
+    update(); log.removeAttribute('aria-busy');
   }
   // Keep the same buttons after each answer so keyboard focus is preserved.
   const topicButtons = chatCopy.questions.map((question, index) => {
     const button = document.createElement('button'); button.type = 'button'; button.textContent = question;
-    button.addEventListener('click', () => {
-      history.push({ role: 'user', topic: index }, { role: 'assistant', topic: index });
-      history.splice(0, Math.max(0, history.length - 20)); errorKey = ''; update();
+    button.addEventListener('click', async () => {
+      if (busy) return;
+      history.push({ role: 'user', topic: index });
+      const task = beginReply();
+      try { await presentReply({ role: 'assistant', topic: index }, task); }
+      finally { finishReply(task); }
     });
     return button;
   });
   $('.chat-topics').append(...topicButtons);
-  function close() { panel.hidden = true; launcher.setAttribute('aria-expanded', 'false'); launcher.focus({ preventScroll: true }); }
+  function close() {
+    if (closing) return;
+    launcher.setAttribute('aria-expanded', 'false'); launcher.focus({ preventScroll: true });
+    if (reducedMotion.matches) { panel.hidden = true; return; }
+    panel.inert = true;
+    closing = panel.animate([{ opacity: 1, transform: 'translateY(0)' }, { opacity: 0, transform: 'translateY(10px)' }], { duration: 240, easing: 'cubic-bezier(.4,0,.2,1)' });
+    closing.onfinish = () => { panel.hidden = true; panel.inert = false; closing = null; };
+  }
   launcher.addEventListener('click', () => {
-    if (!panel.hidden) return close();
-    panel.hidden = false; launcher.setAttribute('aria-expanded', 'true');
+    if (closing) { closing.cancel(); closing = null; }
+    else if (!panel.hidden) return close();
+    panel.hidden = false; panel.inert = false; launcher.setAttribute('aria-expanded', 'true');
     $('.chat-close').focus({ preventScroll: true }); log.scrollTop = log.scrollHeight;
   });
   $('.chat-close').addEventListener('click', close);
   root.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); event.stopPropagation(); close(); } });
-  $('.chat-footer button').addEventListener('click', () => { history.length = 0; errorKey = ''; input.value = ''; update(); });
+  $('.chat-footer button').addEventListener('click', () => {
+    activeReply?.abort(); activeReply = null; busy = false;
+    $('.chat-typing')?.remove(); log.removeAttribute('aria-busy');
+    history.length = 0; errorKey = ''; input.value = ''; update();
+  });
   form.addEventListener('submit', async event => {
     event.preventDefault();
     const question = input.value.trim();
@@ -72,19 +142,20 @@ export function initChat({ chatEndpoint, contacts }) {
     const messages = history.slice(-10).map(item => ({ role: item.role, content: item.topic !== undefined ? chatCopy[item.role === 'user' ? 'questions' : 'answers'][item.topic] : item.content }));
     messages.push({ role: 'user', content: question });
     while (messages.reduce((size, item) => size + item.content.length, 0) > 16000) messages.shift();
-    history.push({ role: 'user', content: question }); busy = true; errorKey = ''; input.value = ''; update();
-    controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 25000);
+    history.push({ role: 'user', content: question }); input.value = '';
+    const task = beginReply(); const timeout = setTimeout(() => task.abort(), 25000);
     try {
-      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit', body: JSON.stringify({ language: 'uk', messages }), signal: controller.signal });
+      const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit', body: JSON.stringify({ language: 'uk', messages }), signal: task.signal });
       if (response.status === 429) { errorKey = 'limit'; throw new Error('limit'); }
       if (!response.ok) throw new Error('unavailable');
       const data = await response.json();
       if (typeof data.reply !== 'string' || !data.reply.trim() || data.reply.length > 8000) throw new Error('invalid');
-      history.push({ role: 'assistant', content: data.reply });
+      clearTimeout(timeout);
+      await presentReply({ role: 'assistant', content: data.reply }, task);
     } catch {
-      history.pop(); input.value = question; errorKey ||= 'error';
+      if (activeReply === task) { history.pop(); input.value = question; errorKey ||= 'error'; }
     } finally {
-      clearTimeout(timeout); busy = false; history.splice(0, Math.max(0, history.length - 20)); update();
+      clearTimeout(timeout); finishReply(task);
     }
   });
   update();

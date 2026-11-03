@@ -1,4 +1,4 @@
-import { initChat } from './chat.js?v=chat-faq-2';
+import { initChat } from './chat.js?v=chat-motion-1';
 import { initSmoothNavigation } from './navigation.js?v=motion-2';
 import { t, initTranslations } from './i18n.js?v=chat-1';
 import { content } from './content.js?v=chat-1';
