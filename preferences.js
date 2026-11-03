@@ -1,3 +1,25 @@
+// Нове відкриття та оновлення починаються з головного екрана, навіть за старим #contact.
+// Повернення кнопкою «Назад» зберігає стандартне відновлення позиції.
+(() => {
+  if (performance.getEntriesByType('navigation')[0]?.type === 'back_forward') return;
+  const previousRestoration = history.scrollRestoration;
+  history.scrollRestoration = 'manual';
+  const sectionHashes = ['#home', '#main', '#about', '#services', '#projects', '#comparison-section', '#process', '#area', '#estimate', '#contact'];
+  if (sectionHashes.includes(location.hash)) history.replaceState(history.state, '', location.pathname + location.search);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  let interacted = false;
+  const listeners = new AbortController();
+  for (const name of ['pointerdown', 'wheel', 'touchstart', 'keydown']) {
+    window.addEventListener(name, () => { interacted = true; }, { passive: true, signal: listeners.signal });
+  }
+  window.addEventListener('pageshow', event => {
+    // Не перебиваємо користувача, якщо він уже почав перегляд до повного завантаження.
+    if (!event.persisted && !interacted) window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    requestAnimationFrame(() => { history.scrollRestoration = previousRestoration; });
+    listeners.abort();
+  }, { once: true });
+})();
+
 // Застосовуємо збережену тему до першого відображення, без початкової анімації.
 (() => {
   const root = document.documentElement;
