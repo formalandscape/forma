@@ -123,3 +123,17 @@ html[data-theme=dark]{color-scheme:dark;--ink:#e6eadd;--muted:#abb8a6;--line:#43
 [data-theme=dark] .header nav a::after{background:#b8c5a4}
 .menu-toggle[aria-expanded=true] span:first-child{transform:translateY(3.5px) rotate(45deg)}
 .menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
+/* М'яка зміна теми: 950 мс змішування знімків на GPU. */
+@keyframes forma-theme-crossfade{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:no-preference){
+ ::view-transition-old(root){animation:none;mix-blend-mode:normal}
+ ::view-transition-new(root){animation:forma-theme-crossfade 950ms cubic-bezier(.45,0,.2,1) both;mix-blend-mode:normal}
+ ::view-transition-group(root){animation-duration:950ms}
+ ::view-transition{pointer-events:none}
+ /* Запасний варіант для браузерів без View Transitions. */
+ .theme-color-transition,.theme-color-transition *,.theme-color-transition *::before,.theme-color-transition *::after{transition:background-color 1s cubic-bezier(.45,0,.2,1),color 1s cubic-bezier(.45,0,.2,1),border-color 1s cubic-bezier(.45,0,.2,1),box-shadow 1s ease,fill 1s ease,stroke 1s ease,opacity .7s ease,transform .45s ease,translate .45s ease!important}
+}
+.header nav a{transition:color .5s ease}
+.header nav a::after{transition:transform .7s cubic-bezier(.22,1,.36,1),background-color .7s ease}
+.header nav a:focus-visible::after{transform:scaleX(1)}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none!important}}

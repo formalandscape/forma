@@ -1,4 +1,5 @@
-import { t, initTranslations } from './i18n.js?v=preferences-1';
+import { initSmoothNavigation } from './navigation.js?v=motion-2';
+import { t, initTranslations } from './i18n.js?v=motion-2';
 import { content } from './content.js?v=copy-size-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
@@ -340,3 +341,5 @@ $$('.button > span, .text-link > span, .header-contact > span, .zoom-icon').forE
 });
 
 initTranslations();
+
+initSmoothNavigation();

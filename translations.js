@@ -3,7 +3,7 @@ export const english = {
   "Перейти до вмісту": "Skip to content",
   "FORMA — головна": "FORMA — home",
   "FORMA — на початок": "FORMA — back to top",
-  "ЛАНДШАФТ І АРХІТЕКТУРА": "LANDSCAPE & ARCHITECTURE",
+  "ЛАНДШАФТНИЙ ДИЗАЙН": "LANDSCAPE DESIGN",
   "Головна навігація": "Main navigation",
   "Про нас": "About us",
   "Послуги": "Services",

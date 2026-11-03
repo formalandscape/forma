@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 // fileURLToPath працює також у Node.js 20.0 та на Windows.
 const root = dirname(fileURLToPath(import.meta.url));
 const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif', '.ico': 'image/x-icon', '.woff2': 'font/woff2' };
-const publicFiles = new Set(['index.html', 'styles.css', 'app.js', 'content.js', 'inquiry.js', 'i18n.js', 'translations.js', 'preferences.js']);
+const publicFiles = new Set(['index.html', 'styles.css', 'app.js', 'content.js', 'inquiry.js', 'i18n.js', 'translations.js', 'preferences.js', 'navigation.js']);
 const port = Number(process.env.PORT || 3000);
 if (!Number.isInteger(port) || port < 1 || port > 65535) { console.error('FORMA: PORT має бути числом від 1 до 65535.'); process.exit(1); }
 const server = createServer(async (req, res) => {
