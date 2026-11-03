@@ -5,7 +5,7 @@ export const content = {
   // HTTPS URL of the deployed server + /api/chat. null keeps the honest quick-answer mode.
   chatEndpoint: null,
   // Отримувач листів налаштовується в кабінеті Formspree.
-  inquiryEndpoint: 'https://formspree.io/f/mdeepwyp',
+  inquiryEndpoint: 'https://formspree.io/f/mvkkdgae',
   hero: {
     title: 'FORMA — простір, створений природою та дизайном',
     subtitle: 'Ландшафтний дизайн та благоустрій приватних територій на правому березі Києва.',
@@ -48,7 +48,7 @@ export const content = {
   ],
   contacts: {
     // Приклад формату телефону: +380XXXXXXXXX. null залишає видиму заглушку.
-    phone: '+380988185461', email: 'markkon2013@gmail.com',
+    phone: '+380988185461', email: 'forma.landscape1@gmail.com',
     telegram: 'https://t.me/Olegkonovalenko78',
     viber: 'viber://chat?number=%2B380988185461',
     hiddenMessengers: ['viber'],
