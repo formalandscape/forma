@@ -44,12 +44,13 @@ function renderValue(node, key, current, write) {
 }
 function translateTree(root) {
   if (root.nodeType === Node.TEXT_NODE) {
-    if (!root.parentElement?.closest('script,style,textarea,noscript')) renderValue(root, 'text', root.nodeValue, next => { root.nodeValue = next; });
+    if (!root.parentElement?.closest('script,style,textarea,noscript,[translate="no"]')) renderValue(root, 'text', root.nodeValue, next => { root.nodeValue = next; });
     return;
   }
+  if (root.parentElement?.closest('[translate="no"]')) return;
   if (root.nodeType !== Node.ELEMENT_NODE && root.nodeType !== Node.DOCUMENT_NODE) return;
   if (root.nodeType === Node.ELEMENT_NODE) {
-    if (root.matches('script,style,noscript')) return;
+    if (root.matches('script,style,noscript,[translate="no"]')) return;
     // Значення option не змінюється разом із перекладом підпису.
     if (root.matches('option:not([value])')) root.value = root.textContent;
     for (const key of attributes) if (root.hasAttribute(key)) renderValue(root, key, root.getAttribute(key), next => root.setAttribute(key, next));

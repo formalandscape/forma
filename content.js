@@ -2,6 +2,8 @@
 // Не додавайте персональні дані клієнтів без їхнього дозволу.
 export const content = {
   brand: 'FORMA',
+  // HTTPS URL of the deployed server + /api/chat. null keeps the honest quick-answer mode.
+  chatEndpoint: null,
   // Отримувач листів налаштовується в кабінеті Formspree.
   inquiryEndpoint: 'https://formspree.io/f/mdeepwyp',
   hero: {

@@ -1,6 +1,7 @@
+import { initChat } from './chat.js?v=chat-1';
 import { initSmoothNavigation } from './navigation.js?v=motion-2';
-import { t, initTranslations } from './i18n.js?v=messengers-1';
-import { content } from './content.js?v=messengers-2';
+import { t, initTranslations } from './i18n.js?v=chat-1';
+import { content } from './content.js?v=chat-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -359,3 +360,5 @@ $$('.button > span, .text-link > span, .header-contact > span, .zoom-icon').forE
 initTranslations();
 
 initSmoothNavigation();
+
+initChat(content);
