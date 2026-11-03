@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { Readable } from 'node:stream';
 import { createChatHandler, validateChat } from '../chat-api.mjs';
 
-const origin = 'https://mark33d.github.io';
+const origin = 'https://formalandscape.github.io';
 const valid = { language: 'uk', messages: [{ role: 'user', content: 'Де ви працюєте?' }] };
 async function request(handler, { method = 'POST', headers = {}, body = JSON.stringify(valid) } = {}) {
   const req = Readable.from([Buffer.from(body)]);

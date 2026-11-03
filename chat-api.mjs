@@ -25,7 +25,7 @@ export function chatInstructions() {
 export function createChatHandler({ env = process.env, fetchImpl = fetch, now = Date.now } = {}) {
   let hourStart = now(), hourly = 0, dayStart = now(), daily = 0, active = 0;
   const clients = new Map();
-  const origins = new Set((env.CHAT_ALLOWED_ORIGINS || 'https://mark33d.github.io').split(',').map(value => value.trim()).filter(Boolean));
+  const origins = new Set((env.CHAT_ALLOWED_ORIGINS || 'https://formalandscape.github.io').split(',').map(value => value.trim()).filter(Boolean));
   return async function handleChat(req, res) {
     const send = (status, error, reply) => {
       res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
