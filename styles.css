@@ -154,8 +154,8 @@ html[data-theme=dark]{color-scheme:dark;--ink:#e6eadd;--muted:#abb8a6;--line:#43
 .chat-messages{padding:18px;overflow:auto;overscroll-behavior:contain;min-height:90px;max-height:260px;flex:1 1 auto;display:flex;flex-direction:column;gap:12px}
 .chat-bubble{border-radius:12px;padding:12px 14px;white-space:pre-wrap;overflow-wrap:anywhere;background:var(--chat-bubble);align-self:flex-start;max-width:95%;flex-shrink:0}
 .chat-user{align-self:flex-end;background:var(--green);color:#f8f7f2}
-.chat-topics{display:flex;flex-wrap:wrap;gap:7px;padding:0 18px 12px;flex-shrink:0}
-.chat-topics button{border:1px solid var(--line);border-radius:18px;background:none;padding:7px 10px;font-size:11px;min-height:34px;transition:background-color .3s ease}
+.chat-topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:0 18px 12px;flex-shrink:0}
+.chat-topics button{border:1px solid var(--line);border-radius:18px;background:none;padding:7px 10px;font-size:11px;line-height:1.4;min-height:44px;min-width:0;white-space:normal;overflow-wrap:anywhere;transition:background-color .3s ease}
 .chat-topics button:hover{background:var(--chat-bubble)}
 .chat-status{padding:0 18px 12px;font-size:11px;color:var(--muted);flex-shrink:0}
 .chat-status:empty{display:none}
