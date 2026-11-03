@@ -1,5 +1,7 @@
 // Український оригінал → англійський переклад. Оновлюйте разом із контентом.
 export const english = {
+  "Відкрити Telegram у новій вкладці": "Open Telegram in a new tab",
+  "Відкрити чат у Viber (потрібен застосунок)": "Open Viber chat (app required)",
   "Перейти до вмісту": "Skip to content",
   "FORMA — головна": "FORMA — home",
   "FORMA — на початок": "FORMA — back to top",

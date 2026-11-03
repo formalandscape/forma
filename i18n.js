@@ -1,4 +1,4 @@
-import { english } from './translations.js?v=motion-2';
+import { english } from './translations.js?v=messengers-1';
 const ukrainian = Object.fromEntries(Object.entries(english).map(([uk, en]) => [en, uk]));
 let language = document.documentElement.dataset.language === 'en' ? 'en' : 'uk';
 export function t(value, target = language) {

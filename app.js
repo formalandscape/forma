@@ -1,6 +1,6 @@
 import { initSmoothNavigation } from './navigation.js?v=motion-2';
-import { t, initTranslations } from './i18n.js?v=motion-2';
-import { content } from './content.js?v=copy-size-1';
+import { t, initTranslations } from './i18n.js?v=messengers-1';
+import { content } from './content.js?v=messengers-1';
 import { sendInquiry } from './inquiry.js?v=formspree-1';
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -195,9 +195,24 @@ if (companyPhone) {
 if (companyEmail) copyContact(companyEmail, 'Скопіювати пошту', 'Пошту скопійовано', 'Адресу виділено. Натисніть Ctrl+C / ⌘C або оберіть «Копіювати».', '#email-slot', 'email-copy');
 for (const [key, title] of [['telegram', 'Telegram'], ['viber', 'Viber']]) {
   const raw = content.contacts[key]; let href;
-  try { const url = new URL(raw); if ((url.protocol === 'https:' && ['t.me', 'telegram.me', 'www.viber.com', 'invite.viber.com'].includes(url.hostname)) || (key === 'viber' && url.protocol === 'viber:')) href = url.href; } catch { /* Залишити заглушку. */ }
+  try {
+    const url = new URL(raw);
+    const validTelegram = key === 'telegram' && url.protocol === 'https:' && ['t.me', 'telegram.me'].includes(url.hostname);
+    const validViber = key === 'viber' && (
+      (url.protocol === 'viber:' && url.hostname === 'chat' && phoneNumber(url.searchParams.get('number'))) ||
+      (url.protocol === 'https:' && ['www.viber.com', 'invite.viber.com'].includes(url.hostname))
+    );
+    if (validTelegram || validViber) href = url.href;
+  } catch { /* Залишити заглушку. */ }
   const item = element(href ? 'a' : 'span', '', title);
-  if (href) { item.href = href; item.rel = 'noopener noreferrer'; }
+  if (href) {
+    item.href = href;
+    item.dataset.messenger = key;
+    item.rel = 'noopener noreferrer';
+    if (href.startsWith('https:')) item.target = '_blank';
+    const label = key === 'telegram' ? 'Відкрити Telegram у новій вкладці' : 'Відкрити чат у Viber (потрібен застосунок)';
+    item.setAttribute('aria-label', label); item.title = label;
+  }
   else item.append(element('small', '', 'Посилання ще не додано'));
   $('#messengers').append(item);
 }
