@@ -40,4 +40,6 @@ Google підтримує назву й favicon на рівні домену ч�
 - https://developers.google.com/search/docs/appearance/site-names
 - https://developers.google.com/search/docs/appearance/favicon-in-search
 
-Стан публікації 4 листопада 2026: іконки й метадані основного сайту підготовлено. Файли кореневої сторінки готові в /workspace/forma-domain-home, але GitHub відхилив створення нового репозиторію через поточний доступ: Resource not accessible by integration (createRepository). Власнику потрібно створити порожній публічний репозиторій formalandscape.github.io у своєму акаунті. Після цього завантажити підготовлені файли та ввімкнути GitHub Pages: main / (root). До фактичної публікації коренева сторінка лишається 404; на неї ще не можна покладатися для назви й favicon у Google.
+Стан публікації 4 листопада 2026: головну сторінку домену та іконки опубліковано. Після початкової відмови createRepository власник створив formalandscape/formalandscape.github.io вручну; підготовлений commit d668631 завантажено в main, GitHub Pages автоматично ввімкнув main / (root), перша публікація 41840948581 завершилася успішно. Перевірено публічні HTTP 200 та точний вміст: /, /favicon-96.png, /favicon.ico, /logo.png, /robots.txt, /sitemap.xml, /googlec1003d020b97f89b.html. Основний /forma/ також повертає HTTP 200 і зберігає попередній вміст.
+
+Налаштування на сайті готові; фактичну зміну назви та іконки у видачі треба перевіряти після повторного сканування Google. Доступу до приватної Search Console немає, запит індексації кореневої сторінки з цього середовища не подано.
